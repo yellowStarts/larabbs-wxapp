@@ -1,48 +1,36 @@
+<style>
+</style>
 <template>
-<div class="page">
-  <div class="page__bd">
-    <div class="weui-panel weui-panel_access">
-      <div class="weui-panel__hd">话题列表</div>
-      <div class="weui-panel__bd">
-        <div v-for="topic in topics">
-          <a url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-            <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-              <image class="weui-media-box__thumb" src="https://cdn.learnku.com/uploads/avatars/3995_1516760409.jpg?imagediv2/1/w/200/h/200" />
-            </div>
-            <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <div class="weui-media-box__title">{{ topic.title }}</div>
-              <div class="weui-media-box__desc">{{ topic.body }}</div>
-            </div>
+	<div class="page">
+    <div class="page__bd">
+      <div class="weui-panel weui-panel_access">
+        <div class="weui-panel__hd" v-if="loggedIn">
+          已登录
+        </div>
+        <div v-else>
+          <a class="weui-cell weui-cell_access" url="/pages/auth/login">
+            <div class="weui-cell__bd">未登录</div>
+            <div class="weui-cell_access weui-cell__ft"></div>
           </a>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
-
 <script>
   import wepy from '@wepy/core'
 
   wepy.page({
+    config: {
+      navigationBarTitleText: '我的'
+    },
     data: {
-      topics: [{
-        id: 1,
-        title: '测试1',
-        body: 'larabbs 测试内容1'
-      }, {
-        id: 2,
-        title: '测试2',
-        body: 'larabbs 测试内容2'
-      }, {
-        id: 3,
-        title: '测试3',
-        body: 'larabbs 测试内容3'
-      }, {
-        id: 4,
-        title: '测试4',
-        body: 'larabbs 测试内容4'
-      }]
+      loggedIn: false
+    },
+    onShow() {
+      if (wx.getStorageSync('access_token')) {
+        this.loggedIn = true
+      }
     }
   })
 </script>

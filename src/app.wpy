@@ -15,10 +15,10 @@ wepy.use(vuex)
 wepy.use(promisify);
 
 wepy.app({
-  onLaunch() {
-    wepy.wx.login().then(res => {
-      console.log('login: ', res)
-    })
+  async onLaunch() {
+    // WePY 中使用 Await
+    const res = await wepy.wx.login()
+    console.log(res)
   },
   methods: {
   }
@@ -28,12 +28,13 @@ wepy.app({
 {
   pages: [
     'pages/index',
-    'pages/user'
+    'pages/user',
+    'pages/auth/login'
   ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'WeChat',
+    navigationBarTitleText: 'Lemoner',
     navigationBarTextStyle: 'black'
   },
   tabBar: {
