@@ -1,7 +1,8 @@
 import wepy from '@wepy/core'
-import { login } from '@/api/auth'
+import { login, logout, refresh } from '@/api/auth'
 import * as auth from '@/utils/auth'
 import isEmpty from 'lodash/isEmpty'
+import { getCurrentUser } from '@/api/user'
 
 const getDefaultState = () => {
   return {
@@ -23,7 +24,8 @@ var getters = {
 
 // 定义 actions
 const actions = {
-  async login({dispatch, commit }, params = {}) {
+  // 登录
+  async login ({ dispatch, commit }, params = {}) {
     const loginData = await wepy.wx.login()
     params.code = loginData.code
 
@@ -31,6 +33,35 @@ const actions = {
 
     commit('setToken', authResponse.data)
     auth.setToken(authResponse.data)
+
+    dispatch('getUser')
+  },
+
+  // 获取用户信息
+  async getUser ({ dispatch, commit }) {
+    const userResponse = await getCurrentUser()
+
+    commit('setUser', userResponse.data)
+    auth.setUser(userResponse.data)
+  },
+  
+  // 刷新 token
+  async refresh ({ dispatch, commit, state }, params = {}) {
+    const refreshResponse = await refresh(state.accessToken, {}, false)
+
+    commit('setToken', refreshResponse.data)
+    auth.setToken(refreshResponse.data)
+
+    dispatch('getUser')
+  },
+
+  // 退出登录
+  async logout ({ commit, state }) {
+    await logout(state.accessToken)
+
+    // 清空 storage
+    auth.logout()
+    commit('resetState')
   }
 }
 
@@ -42,6 +73,9 @@ const mutations = {
   setToken(state, tokenPayload) {
     state.accessToken = tokenPayload.access_token
     state.accessTokenExpiredAt = new Date().getTime() + tokenPayload.expires_in * 1000
+  },
+  resetState: (state) => {
+    Object.assign(state, getDefaultState())
   }
 }
 
