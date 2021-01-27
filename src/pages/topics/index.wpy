@@ -104,7 +104,7 @@
         <div class="weui-panel__bd">
           <div v-for="topic in topics" :key="topic.id">
             <a
-              url=""
+              url="/pages/topics/show?id={{topic.id}}"
               class="weui-media-box weui-media-box_appmsg"
               hover-class="weui-cell_active"
             >

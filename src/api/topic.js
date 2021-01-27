@@ -12,3 +12,10 @@ export function getTopics(data) {
 export function getCategories(data) {
   return request('categories')
 }
+
+// 获取话题详情
+export function getTopic(id, data) {
+  return request('topics/' + id, {
+    data: data
+  })
+}
