@@ -1,5 +1,5 @@
 import wepy from '@wepy/core'
-import { login, logout, refresh } from '@/api/auth'
+import { login, logout, refresh, register } from '@/api/auth'
 import * as auth from '@/utils/auth'
 import isEmpty from 'lodash/isEmpty'
 import { getCurrentUser } from '@/api/user'
@@ -37,6 +37,16 @@ const actions = {
     dispatch('getUser')
   },
 
+  // 注册
+  async register ({ dispatch }, params = {}) {
+    const loginData = await wepy.wx.login()
+    params.code = loginData.code
+
+    await register(params)
+
+    await dispatch('login')
+  },
+
   // 获取用户信息
   async getUser ({ dispatch, commit }) {
     const userResponse = await getCurrentUser()
@@ -44,7 +54,7 @@ const actions = {
     commit('setUser', userResponse.data)
     auth.setUser(userResponse.data)
   },
-  
+
   // 刷新 token
   async refresh ({ dispatch, commit, state }, params = {}) {
     const refreshResponse = await refresh(state.accessToken, {}, false)
@@ -63,6 +73,8 @@ const actions = {
     auth.logout()
     commit('resetState')
   }
+
+
 }
 
 // 定义 mutations
