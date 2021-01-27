@@ -40,7 +40,7 @@ const request = async (url, options = {}, showLoading = true) => {
   }
 
   const error = new Error(response.data.message)
-  error.message = response
+  error.response = response
   return Promise.reject(error)
 }
 
