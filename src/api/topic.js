@@ -1,5 +1,5 @@
 import { fromPairs } from "lodash";
-import { request } from '@/utils/request'
+import { request, authRequest } from '@/utils/request'
 
 // 获取话题列表
 export function getTopics(data) {
@@ -23,6 +23,14 @@ export function getTopic(id, data) {
 // 获取用户下的话题列表
 export function getUserTopics(userId, data) {
   return request('users/'+userId+'/topics', {
+    data: data
+  })
+}
+
+// 删除
+export function deleteTopic(id, data) {
+  return authRequest('topics/' + id, {
+    method: 'delete',
     data: data
   })
 }
