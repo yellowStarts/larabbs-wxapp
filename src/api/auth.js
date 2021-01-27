@@ -1,5 +1,6 @@
 import { request } from '@/utils/request'
 
+// 登录
 export function login(data) {
   return request('wxapp/authorizations', {
     method: 'post',
@@ -7,6 +8,7 @@ export function login(data) {
   })
 }
 
+// 刷新 token
 export function refresh(token) {
   return request('authorizations/current', {
     method: 'put',
@@ -16,6 +18,7 @@ export function refresh(token) {
   })
 }
 
+// 退出
 export function logout(token) {
   return request('authorizations/current', {
     method: 'delete',
@@ -25,6 +28,7 @@ export function logout(token) {
   })
 }
 
+// 获取图形验证码
 export function getCaptcha(phone) {
   return request('captchas', {
     method: 'post',
@@ -34,6 +38,7 @@ export function getCaptcha(phone) {
   })
 }
 
+// 手机验证码
 export function getVerificationCode(key, code) {
   return request('verificationCodes', {
     method: 'post',
@@ -44,6 +49,7 @@ export function getVerificationCode(key, code) {
   })
 }
 
+// 注册
 export function register(data) {
   return request('wxapp/users', {
     method: 'post',

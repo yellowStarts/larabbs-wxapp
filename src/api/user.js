@@ -1,9 +1,11 @@
 import { request, authRequest, uploadFile } from '@/utils/request'
 
+// 获取当前用户信息
 export function getCurrentUser(data) {
   return authRequest('user')
 }
 
+// 更新用户信息
 export function updateUser(data) {
   return authRequest('user', {
     method: 'put',
@@ -11,6 +13,7 @@ export function updateUser(data) {
   })
 }
 
+// 更新头像
 export function updateAvatar(avatar) {
   return uploadFile('images', {
     method: 'post',

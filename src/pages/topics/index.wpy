@@ -1,58 +1,145 @@
 <style lang="less">
-  .weui-media-box__info__meta {
-    margin: 0;
-    font-size: 12px;
+.weui-media-box__info__meta {
+  margin: 0;
+  font-size: 12px;
+}
+.topic-info {
+  margin-top: 5px;
+}
+.topic-title {
+  white-space: normal;
+  font-size: 14px;
+}
+.avatar {
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 50px;
+  height: 50px;
+}
+.reply-count {
+  background-color: #d8d8d8;
+  float: right;
+}
+
+/*分类*/
+.weui-flex {
+  align-items: center;
+}
+.weui-cells {
+  margin-top: 0;
+  opacity: 0;
+  transition: 0.3s;
+  &:before,
+  &:after {
+    display: none;
   }
-  .topic-info {
-    margin-top: 5px;
+  &_show {
+    opacity: 1;
   }
-  .topic-title {
-    white-space: normal;
-    font-size: 14px;
+}
+.weui-cell {
+  &:before {
+    right: 15px;
   }
-  .avatar {
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 50px;
-    height: 50px;
+}
+.category-list__item {
+  margin: 10px 0;
+  background-color: #ffffff;
+  border-radius: 2px;
+  overflow: hidden;
+  &:first-child {
+    margin-top: 0;
   }
-  .reply-count {
-    background-color: #d8d8d8;
-    float: right;
+}
+.category-list__item_selected {
+  background-color: #eeeeee;
+}
+.category-list__img {
+  width: 30px;
+  height: 30px;
+}
+
+.category-list__item-hd {
+  padding: 20px;
+  transition: opacity 0.3s;
+  &_show {
+    opacity: 0.4;
   }
+}
+.category-list__item-bd {
+  height: 0;
+  overflow: hidden;
+  &_show {
+    height: auto;
+  }
+}
 </style>
 <template>
-<div class="page">
-  <div class="page__bd">
-    <div class="weui-panel weui-panel_access">
-      <div class="weui-panel__bd">
-        <div v-for="topic in topics" :key="topic.id">
-          <a url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-            <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-              <image class="avatar" :src="topic.user.avatar" />
+  <div class="page">
+    <div class="category-list__item">
+      <div class="weui-flex category-list__item-hd" @tap="categorisToggle">
+        <div class="weui-flex__item page-title">{{ currentCategoryName }}</div>
+        <image class="category-list__img" src="/assets/images/category.png" />
+      </div>
+      <div class="category-list__item-bd" :class="{ 'category-list__item-bd_show': categoryOpen }">
+        <div class="weui-cells" :class="{ 'weui-cells_show': categoryOpen }">
+          <div @tap="changeCategory" class="weui-cell weui-cell_access" :class="{ 'category-list__item_selected': !currentCategoryId }">
+            <div class="weui-cell__bd">话题</div>
+          </div>
+          <div v-for="category in categories" :key="category.id">
+            <div @tap="changeCategory(category)" class="weui-cell weui-cell_access"
+              :class="{
+                'category-list__item_selected': currentCategoryId == category.id
+              }"
+            >
+              <div class="weui-cell__bd">{{ category.name }}</div>
             </div>
-            <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <div class="weui-media-box__title topic-title">{{ topic.title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page__bd">
+      <div class="weui-panel weui-panel_access">
+        <div class="weui-panel__bd">
+          <div v-for="topic in topics" :key="topic.id">
+            <a
+              url=""
+              class="weui-media-box weui-media-box_appmsg"
+              hover-class="weui-cell_active"
+            >
+              <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                <image class="avatar" :src="topic.user.avatar" />
+              </div>
+              <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <div class="weui-media-box__title topic-title">
+                  {{ topic.title }}
+                </div>
 
-              <div class="weui-media-box__info topic-info">
-                <div class="weui-media-box__info__meta">{{ topic.category.name }} • </div>
-                <div class="weui-media-box__info__meta">{{ topic.user.name }} • </div>
-                <div class="weui-media-box__info__meta">
-                  <datetime-diff :datetime="topic.updated_at"></datetime-diff>
+                <div class="weui-media-box__info topic-info">
+                  <div class="weui-media-box__info__meta">
+                    {{ topic.category.name }} •
+                  </div>
+                  <div class="weui-media-box__info__meta">
+                    {{ topic.user.name }} •
+                  </div>
+                  <div class="weui-media-box__info__meta">
+                    <datetime-diff :datetime="topic.updated_at"></datetime-diff>
+                  </div>
                 </div>
               </div>
+              <div class="weui-badge reply-count">{{ topic.reply_count }}</div>
+            </a>
+          </div>
+          <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
+            <div class="weui-loadmore__tips weui-loadmore__tips_in-line">
+              没有更多数据
             </div>
-            <div class="weui-badge reply-count">{{ topic.reply_count }}</div>
-          </a>
-        </div>
-        <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
-          <div class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 <config>
   {
@@ -63,61 +150,110 @@
   }
 </config>
 <script>
-  import wepy from '@wepy/core'
-  import { getTopics } from '@/api/topic'
+import wepy from '@wepy/core';
+import { getTopics, getCategories } from '@/api/topic';
 
-  wepy.page({
-    data: {
-      // 话题数据
-      topics: [],
-      // 当前分页
-      page: 1,
-      // 是否还有更多数据
-      noMoreData: false,
-      // 是否在加载中
-      isLoading: false
+wepy.page({
+  data: {
+    // 分类数据
+    categories: [],
+    // 当前的分类
+    currentCategory: {},
+    // 是否显示分类
+    categoryOpen: false,
+    // 话题数据
+    topics: [],
+    // 当前分页
+    page: 1,
+    // 是否还有更多数据
+    noMoreData: false,
+    // 是否在加载中
+    isLoading: false
+  },
+  computed: {
+    currentCategoryId() {
+      return this.currentCategory.id || null
     },
-    async onLoad() {
-      this.loadTopics()
-    },
-    async onPullDownRefresh() {
-      this.page = 1
-      this.noMoreData = false
-      await this.loadTopics(true)
-      wx.stopPullDownRefresh()
-    },
-    async onReachBottom () {
-      // 如果没有更多内容，直接返回
-      if (this.noMoreData || this.isLoading) {
-        return
-      }
-      this.isLoading = true
-      this.page += 1
-
-      await this.loadTopics()
-
-      this.isLoading = false
-    },
-    methods: {
-      // 获取话题数据
-      async loadTopics(reset = false) {
-        // 请求话题列表接口
-        const topicsResponse = await getTopics({
-          page: this.page,
-          include: 'user,category'
-        })
-
-        // 将数据合并到 this.topics
-        this.topics = reset ? topicsResponse.data.data : this.topics.concat(topicsResponse.data.data)
-
-        const pagination = topicsResponse.data.meta
-
-        // 根据分页设置是否还有更多数据
-        if (pagination.current_page === pagination.last_page) {
-          this.noMoreData = true
-        }
-      }
+    currentCategoryName() {
+      return this.currentCategory.name || '话题'
     }
+  },
+  async onLoad() {
+    this.loadTopics();
+    this.loadCategories();
+  },
+  async onPullDownRefresh() {
+    this.page = 1;
+    this.noMoreData = false;
+    await this.loadTopics(true);
+    wx.stopPullDownRefresh();
+  },
+  async onReachBottom() {
+    // 如果没有更多内容，直接返回
+    if (this.noMoreData || this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
+    this.page += 1;
 
-  })
+    await this.loadTopics();
+
+    this.isLoading = false;
+  },
+  methods: {
+    // 获取话题数据
+    async loadTopics(reset = false) {
+      let params = {
+        page: this.page,
+        include: 'user,category'
+      }
+
+      if (this.currentCategoryId) {
+        params['filter[category_id]'] = this.currentCategoryId
+      }
+
+      // 请求话题列表接口
+      const topicsResponse = await getTopics(params);
+
+      // 将数据合并到 this.topics
+      this.topics = reset
+        ? topicsResponse.data.data
+        : this.topics.concat(topicsResponse.data.data);
+
+      const pagination = topicsResponse.data.meta;
+
+      // 根据分页设置是否还有更多数据
+      if (pagination.current_page === pagination.last_page) {
+        this.noMoreData = true;
+      }
+    },
+
+    categorisToggle() {
+      this.categoryOpen = !this.categoryOpen
+    },
+
+    async changeCategory (category = {}) {
+      this.currentCategory = category
+      this.categoryOpen = false
+      this.page = 1
+
+      // 设置 reset 为 true
+      this.loadTopics(true)
+    },
+
+    async loadCategories() {
+      // 从缓存中获取分类数据
+      let categories = wx.getStorageSync('categories');
+
+      if (!categories) {
+        const categoriesResponse = await getCategories();
+        categories = categoriesResponse.data.data;
+
+        wx.getStorageSync('categories', categories);
+      }
+
+      this.categories = categories;
+    }
+  }
+});
 </script>
