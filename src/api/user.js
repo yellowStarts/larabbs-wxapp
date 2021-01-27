@@ -24,3 +24,8 @@ export function updateAvatar(avatar) {
     filePath: avatar
   })
 }
+
+// 获取用户信息
+export function getUser(id) {
+  return request('users/'+id)
+}
