@@ -19,3 +19,10 @@ export function getTopic(id, data) {
     data: data
   })
 }
+
+// 获取用户下的话题列表
+export function getUserTopics(userId, data) {
+  return request('users/'+userId+'/topics', {
+    data: data
+  })
+}
