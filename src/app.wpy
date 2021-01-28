@@ -15,12 +15,21 @@ wepy.use(vuex)
 wepy.use(promisify);
 
 wepy.app({
+  store: require('./store').default,
   async onLaunch() {
-    // WePY 中使用 Await
-    const res = await wepy.wx.login()
-    console.log(res)
+    this.$store = this.$options.store;
+    setTimeout(() => {
+      this.updateUnreadCount()
+    }, 500)
+
+    setInterval(() => {
+      this.updateUnreadCount()
+    }, 60000)
   },
   methods: {
+    async updateUnreadCount() {
+      await this.$store.dispatch('updateUnreadCount')
+    }
   }
 })
 </script>
@@ -36,7 +45,9 @@ wepy.app({
     'pages/auth/login',
     'pages/auth/register',
     'pages/replies/index',
-    'pages/replies/user-index'
+    'pages/replies/user-index',
+    'pages/replies/create',
+    'pages/notifications/index',
   ],
   window: {
     backgroundTextStyle: 'light',
