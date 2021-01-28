@@ -2,13 +2,14 @@ import wepy from '@wepy/core'
 import { login, logout, refresh, register } from '@/api/auth'
 import * as auth from '@/utils/auth'
 import isEmpty from 'lodash/isEmpty'
-import { getCurrentUser, updateUser } from '@/api/user'
+import { getCurrentUser, updateUser, getPerms } from '@/api/user'
 
 const getDefaultState = () => {
   return {
     user: auth.getUser(),
     accessToken: auth.getToken(),
-    accessTokenExpiredAt: auth.getTokenExpiredAt()
+    accessTokenExpiredAt: auth.getTokenExpiredAt(),
+    perms: auth.getPerms()
   }
 }
 
@@ -19,7 +20,8 @@ var getters = {
   isLoggedIn: state => !isEmpty(state.accessToken),
   user: state => state.user,
   accessToken: state => state.accessToken,
-  accessTokenExpiredAt: state => state.accessTokenExpiredAt
+  accessTokenExpiredAt: state => state.accessTokenExpiredAt,
+  perms: state => state.perms
 }
 
 // 定义 actions
@@ -53,6 +55,15 @@ const actions = {
 
     commit('setUser', userResponse.data)
     auth.setUser(userResponse.data)
+
+    dispatch('getPerms')
+  },
+
+  async getPerms ({ commit }) {
+    const permResponse = await getPerms()
+
+    commit('setPerms', permResponse.data.data)
+    auth.setPerms(permResponse.data.data)
   },
 
   // 刷新 token
@@ -81,7 +92,6 @@ const actions = {
     commit('setUser', editResponse.data)
     auth.setUser(editResponse.data)
   }
-
 }
 
 // 定义 mutations
@@ -95,6 +105,9 @@ const mutations = {
   },
   resetState: (state) => {
     Object.assign(state, getDefaultState())
+  },
+  setPerms(state, perms) {
+    state.perms = perms
   }
 }
 

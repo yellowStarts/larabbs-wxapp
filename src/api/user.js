@@ -29,3 +29,8 @@ export function updateAvatar(avatar) {
 export function getUser(id) {
   return request('users/'+id)
 }
+
+// 获取权限
+export function getPerms() {
+  return authRequest('user/permissions')
+}
