@@ -11,7 +11,7 @@
 </style>
 <template>
   <div class="page__bd">
-    <reply-list :replies="data" :no-more-data ="noMoreData"></reply-list>
+    <reply-list :replies="resourceData" :no-more-data ="noMoreData"></reply-list>
     <reply-create-link :topicId="topicId"></reply-create-link>
   </div>
 </template>
@@ -46,6 +46,10 @@
         this.page = 1
         this.noMoreData = false
         this.loadData(true)
+      })
+
+      eventHub.$on('reply-deleted', (reply) => {
+        this.resourceData = this.resourceData.filter((r) => r.id !== reply.id)
       })
     },
     methods: {
